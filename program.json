@@ -1,0 +1,405 @@
+{
+  "EntryPoint": {
+    "Name": "Microsoft__Quantum__Qir__Emission__EstimatePhaseByRandomWalk__body",
+    "Args": [
+      {
+        "Name": "nrIter",
+        "Type": "i64"
+      }
+    ],
+    "Instructions": [
+      {
+        "Type": "label",
+        "Value": "entry"
+      },
+      {
+        "Type": "qubit_alloc",
+        "Id": 0,
+        "Name": "target"
+      },
+      {
+        "Type": "qubit_alloc",
+        "Id": 1,
+        "Name": "aux"
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__Prepare__body",
+        "QubitArgs": [
+          0
+        ],
+        "ClassicalArgs": []
+      },
+      {
+        "Type": "branch",
+        "Condition": {
+          "Comparison": "slt",
+          "Lhs": "nrIter",
+          "Rhs": "1"
+        },
+        "TrueBranch": {
+          "Jump": "exit__1",
+          "Assignments": [
+            {
+              "Lhs": "mu.0.lcssa",
+              "Rhs": "7.951000e-01"
+            }
+          ]
+        },
+        "FalseBranch": {
+          "Jump": "body__1",
+          "Assignments": [
+            {
+              "Lhs": "temp0",
+              "Rhs": "1"
+            },
+            {
+              "Lhs": "sigma.03",
+              "Rhs": "6.065000e-01"
+            },
+            {
+              "Lhs": "mu.02",
+              "Rhs": "7.951000e-01"
+            }
+          ]
+        }
+      },
+      {
+        "Type": "label",
+        "Value": "body__1"
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__ClassicalComputeInput1__body",
+        "ResultVar": "c1",
+        "QubitArgs": [],
+        "ClassicalArgs": [
+          "mu.02",
+          "sigma.03"
+        ]
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__ClassicalComputeInput2__body",
+        "ResultVar": "c2",
+        "QubitArgs": [],
+        "ClassicalArgs": [
+          "mu.02",
+          "sigma.03"
+        ]
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__Iterate__body",
+        "ResultVar": "datum",
+        "QubitArgs": [
+          0,
+          1
+        ],
+        "ClassicalArgs": [
+          "c1",
+          "c2"
+        ]
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__ClassicalUpdateMu__body",
+        "ResultVar": "temp1",
+        "QubitArgs": [],
+        "ClassicalArgs": [
+          "mu.02",
+          "sigma.03",
+          "datum"
+        ]
+      },
+      {
+        "Type": "call",
+        "ProcName": "Microsoft__Quantum__Qir__Emission__ClassicalUpdateSigma__body",
+        "ResultVar": "temp2",
+        "QubitArgs": [],
+        "ClassicalArgs": [
+          "sigma.03"
+        ]
+      },
+      {
+        "Type": "add",
+        "ResultVar": "temp3",
+        "Lhs": "temp0",
+        "Rhs": "1"
+      },
+      {
+        "Type": "branch",
+        "Condition": {
+          "Comparison": "sgt",
+          "Lhs": "temp3",
+          "Rhs": "nrIter"
+        },
+        "TrueBranch": {
+          "Jump": "exit__1",
+          "Assignments": [
+            {
+              "Lhs": "mu.0.lcssa",
+              "Rhs": "temp1"
+            }
+          ]
+        },
+        "FalseBranch": {
+          "Jump": "body__1",
+          "Assignments": [
+            {
+              "Lhs": "temp0",
+              "Rhs": "temp3"
+            },
+            {
+              "Lhs": "sigma.03",
+              "Rhs": "temp2"
+            },
+            {
+              "Lhs": "mu.02",
+              "Rhs": "temp1"
+            }
+          ]
+        }
+      },
+      {
+        "Type": "label",
+        "Value": "exit__1"
+      },
+      {
+        "Type": "return",
+        "Value": "mu.0.lcssa"
+      }
+    ]
+  },
+  "QuantumProcedures": [
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__Prepare__body",
+      "Instructions": [
+        {
+          "Gate": "h",
+          "Target": "target",
+          "Control": "",
+          "Args": [],
+          "ResultVar": ""
+        }
+      ],
+      "QubitArgs": [
+        "target"
+      ],
+      "ClassicalArgs": []
+    },
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__Iterate__body",
+      "Instructions": [
+        {
+          "Gate": "h",
+          "Target": "aux",
+          "Control": "",
+          "Args": [],
+          "ResultVar": ""
+        },
+        {
+          "Gate": "rz",
+          "Target": "aux",
+          "Control": "",
+          "Args": [
+            "c1"
+          ],
+          "ResultVar": ""
+        },
+        {
+          "Gate": "crz",
+          "Target": "target",
+          "Control": "aux",
+          "Args": [
+            "c2"
+          ],
+          "ResultVar": ""
+        },
+        {
+          "Gate": "h",
+          "Target": "aux",
+          "Control": "",
+          "Args": [],
+          "ResultVar": ""
+        },
+        {
+          "Gate": "measure",
+          "Target": "aux",
+          "Control": "",
+          "Args": [],
+          "ResultVar": "result.i"
+        },
+        {
+          "Gate": "reset",
+          "Target": "aux",
+          "Control": "",
+          "Args": [],
+          "ResultVar": ""
+        },
+        {
+          "Gate": "return",
+          "Value": "result.i"
+        }
+      ],
+      "QubitArgs": [
+        "target",
+        "aux"
+      ],
+      "ClassicalArgs": [
+        "c1",
+        "c2"
+      ]
+    }
+  ],
+  "ClassicalProcedures": [
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__ClassicalComputeInput1__body",
+      "Instructions": [
+        {
+          "Type": "fdiv",
+          "ResultVar": "temp0",
+          "Lhs": "mu",
+          "Rhs": "sigma"
+        },
+        {
+          "Type": "fsub",
+          "ResultVar": "temp1",
+          "Lhs": "0x3FF921FB54442D18",
+          "Rhs": "temp0"
+        },
+        {
+          "Type": "return",
+          "Value": "temp1"
+        }
+      ],
+      "QubitArgs": [],
+      "ClassicalArgs": [
+        "mu",
+        "sigma"
+      ]
+    },
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__ClassicalComputeInput2__body",
+      "Instructions": [
+        {
+          "Type": "fmul",
+          "ResultVar": "temp0",
+          "Lhs": "sigma",
+          "Rhs": "0x400921FB54442D18"
+        },
+        {
+          "Type": "fmul",
+          "ResultVar": "temp1",
+          "Lhs": "temp0",
+          "Rhs": "5.000000e-01"
+        },
+        {
+          "Type": "fsub",
+          "ResultVar": "temp2",
+          "Lhs": "mu",
+          "Rhs": "temp1"
+        },
+        {
+          "Type": "fmul",
+          "ResultVar": "temp3",
+          "Lhs": "temp2",
+          "Rhs": "0x400921FB54442D18"
+        },
+        {
+          "Type": "return",
+          "Value": "temp3"
+        }
+      ],
+      "QubitArgs": [],
+      "ClassicalArgs": [
+        "mu",
+        "sigma"
+      ]
+    },
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__ClassicalUpdateMu__body",
+      "Instructions": [
+        {
+          "Type": "call",
+          "ProcName": "__quantum__rt__result_get_zero",
+          "ResultVar": "temp0",
+          "QubitArgs": [],
+          "ClassicalArgs": []
+        },
+        {
+          "Type": "call",
+          "ProcName": "__quantum__rt__result_equal",
+          "ResultVar": "temp1",
+          "QubitArgs": [],
+          "ClassicalArgs": [
+            "res",
+            "temp0"
+          ]
+        },
+        {
+          "Type": "fmul",
+          "ResultVar": "temp2",
+          "Lhs": "sigma",
+          "Rhs": "6.065000e-01"
+        },
+        {
+          "Type": "fneg",
+          "ResultVar": "temp3",
+          "Value": "temp2"
+        },
+        {
+          "Type": "select",
+          "Condition": {
+            "Comparison": "eq",
+            "Lhs": "temp1",
+            "Rhs": "1"
+          },
+          "TrueBranch": {
+            "Lhs": ".p",
+            "Rhs": "temp3"
+          },
+          "FalseBranch": {
+            "Lhs": ".p",
+            "Rhs": "temp2"
+          }
+        },
+        {
+          "Type": "fadd",
+          "ResultVar": "temp4",
+          "Lhs": ".p",
+          "Rhs": "mu"
+        },
+        {
+          "Type": "return",
+          "Value": "temp4"
+        }
+      ],
+      "QubitArgs": [],
+      "ClassicalArgs": [
+        "mu",
+        "sigma",
+        "res"
+      ]
+    },
+    {
+      "Name": "Microsoft__Quantum__Qir__Emission__ClassicalUpdateSigma__body",
+      "Instructions": [
+        {
+          "Type": "fmul",
+          "ResultVar": "temp0",
+          "Lhs": "sigma",
+          "Rhs": "7.951000e-01"
+        },
+        {
+          "Type": "return",
+          "Value": "temp0"
+        }
+      ],
+      "QubitArgs": [],
+      "ClassicalArgs": [
+        "sigma"
+      ]
+    }
+  ]
+}
