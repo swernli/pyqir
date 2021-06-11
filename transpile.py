@@ -296,5 +296,5 @@ def psuedo_code(program):
 
 if len(sys.argv) == 1 or sys.argv[1] == "json":
     print(json.dumps(program, indent=2))
-elif sys.argv[1] == "psuedo":
+elif sys.argv[1] == "pseudo":
     psuedo_code(program)
