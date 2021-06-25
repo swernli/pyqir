@@ -1,0 +1,47 @@
+main(i64 nrIter):
+  label entry
+  # qubit 0 is 'target'
+  # qubit 1 is 'aux'
+  __quantum__qis__h__body([0])
+  if nrIter < 1:
+    mu.0.lcssa = 7.951000e-01
+    jump exit__1
+  else:
+    temp0 = 1
+    sigma.03 = 6.065000e-01
+    mu.02 = 7.951000e-01
+    jump body__1
+  label body__1
+  temp1 = mu.02 / sigma.03
+  temp2 = 0x3FF921FB54442D18 - temp1
+  temp3 = sigma.03 * 0x400921FB54442D18
+  temp4 = temp3 * 5.000000e-01
+  temp5 = mu.02 - temp4
+  temp6 = temp5 * 0x400921FB54442D18
+  __quantum__qis__h__body([1])
+  __quantum__qis__rz__body([1], temp2)
+  __quantum__qis__crz__body([1, 0], temp6)
+  __quantum__qis__h__body([1])
+  result.i.i =  __quantum__qis__m__body([1])
+  __quantum__qis__reset__body([1])
+  temp7 =  __quantum__rt__result_get_zero()
+  temp8 =  __quantum__rt__result_equal(result.i.i, temp7)
+  temp9 = sigma.03 * 6.065000e-01
+  temp10 = -(temp9)
+  if temp8 == 1:
+    .p.i = temp10
+  else:
+    .p.i = temp9
+  temp11 = mu.02 + .p.i
+  temp12 = sigma.03 * 7.951000e-01
+  temp13 = temp0 + 1
+  if temp13 > nrIter:
+    mu.0.lcssa = temp11
+    jump exit__1
+  else:
+    temp0 = temp13
+    sigma.03 = temp12
+    mu.02 = temp11
+    jump body__1
+  label exit__1
+  return mu.0.lcssa
