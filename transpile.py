@@ -67,13 +67,37 @@ for b in entryPoint.blocks:
     instrs += [{'Type': 'label', 'Value': b.name}]
     for i in b.instructions:
         operands = list(i.operands)
-        if i.opcode == "call":
+        if i.opcode == "fadd" or i.opcode == "fsub" or i.opcode == "fmul" or i.opcode == "fdiv":
+            args = list(map((lambda o: o.name if o.name != "" else str(
+                o).split(' ')[1]), operands))
+            instrs += [{'Type': i.opcode,
+                                        'ResultVar': i.name, 'Lhs': args[0], 'Rhs': args[1]}]
+        elif i.opcode == "fneg":
+            instrs += [{'Type': i.opcode, 'ResultVar': i.name,
+                                        'Value': operands[0].name if operands[0].name != "" else str(operands[0]).split(' ')[1]}]
+        elif i.opcode == "select":
+            condition = {'Comparison': 'eq',
+                            'Lhs': operands[0].name, 'Rhs': "1"}
+            instrs += [{'Type': 'select', 'Condition': condition,
+                                        'TrueBranch': {'Lhs': i.name, 'Rhs': operands[1].name if operands[1].name != "" else str(operands[1]).split(' ')[1]},
+                                        'FalseBranch': {'Lhs': i.name, 'Rhs': operands[2].name if operands[2].name != "" else str(operands[1]).split(' ')[1]}}]
+        elif i.opcode == "call":
             if operands[-1].name == "__quantum__rt__qubit_allocate":
                 # Store the mapping from qubit name to module id.
                 qubit_map[i.name] = qubit_id
                 instrs += [{'Type': 'qubit_alloc',
                             'Id': qubit_id, 'Name': i.name}]
                 qubit_id += 1
+            if operands[-1].name.startswith("__quantum__rt__result") and operands[-1].name != "__quantum__rt__result_update_reference_count":
+                call = {'Type': 'call', 'ProcName': operands[-1].name}
+                if i.name != "" and i.type != "void":
+                    call['ResultVar'] = i.name
+                classical_args = []
+                for o in operands[0:len(operands)-1]:
+                    classical_args += [o.name]
+                call['QubitArgs'] = []
+                call['ClassicalArgs'] = classical_args
+                instrs += [call]
             elif not operands[-1].name.startswith("__quantum__rt__"):
                 call = {'Type': 'call', 'ProcName': operands[-1].name}
                 # Save this function name to the list of functions to generate later.
@@ -246,6 +270,25 @@ def psuedo_code(program):
             for a in instr['FalseBranch']['Assignments']:
                 print(f"    {assignment(a)}")
             print(f"    jump {instr['FalseBranch']['Jump']}")
+        elif t == 'fadd':
+            print(f"  {instr['ResultVar']} = {instr['Lhs']} + {instr['Rhs']}")
+        elif t == 'fsub':
+            print(f"  {instr['ResultVar']} = {instr['Lhs']} - {instr['Rhs']}")
+        elif t == 'fmul':
+            print(f"  {instr['ResultVar']} = {instr['Lhs']} * {instr['Rhs']}")
+        elif t == 'fdiv':
+            print(f"  {instr['ResultVar']} = {instr['Lhs']} / {instr['Rhs']}")
+        elif t == 'fneg':
+            print(f"  {instr['ResultVar']} = -({instr['Value']})")
+        elif t == 'return':
+            print(f"  return {instr['Value']}")
+        elif t == 'select':
+            cond = instr['Condition']
+            print(f"  if {cond['Lhs']} {comparison(cond['Comparison'])} {cond['Rhs']}:")
+            print(f"    {assignment(instr['TrueBranch'])}")
+            print(f"  else:")
+            print(f"    {assignment(instr['FalseBranch'])}")
+
 
     for proc in program['QuantumProcedures']:
         print(f"\n{proc['Name']}(", end="")
